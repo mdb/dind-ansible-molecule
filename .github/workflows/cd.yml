@@ -18,5 +18,5 @@ jobs:
           username: mdb
           password: ${{ secrets.CR_PAT }}
           registry: ghcr.io
-          repository: ghcr.io/mdb/dind-ansible-molecule
+          repository: mdb/dind-ansible-molecule
           tag_with_ref: true
