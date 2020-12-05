@@ -12,6 +12,15 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: clapclapexcitement
+          password: ${{ secrets.DOCKER_HUB_LOGIN }}
+          registry: hub.docker.com
+          repository: clapclapexcitement/dind-ansible-molecule
+          tag_with_ref: true
+          tags: latest
       - name: Push to GitHub Packages
         uses: docker/build-push-action@v1
         with:
@@ -20,3 +29,4 @@ jobs:
           registry: ghcr.io
           repository: mdb/dind-ansible-molecule
           tag_with_ref: true
+          tags: latest
