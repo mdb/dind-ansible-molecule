@@ -1,0 +1,22 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push_to_registries:
+    name: Push image to registries
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: mdb
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: mdb/dind-ansible-molecule
+          tag_with_ref: true
