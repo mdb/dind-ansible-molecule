@@ -4,4 +4,4 @@ all: build
 
 build:
 	docker build \
-		--tag clapclapexcitement/dind-ansible-molecule .
+		--tag dind-ansible-molecule .
