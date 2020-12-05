@@ -1,3 +1,10 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   push_to_registries:
     name: Push image to registries
