@@ -1,31 +1,64 @@
-name: CD
-
 on:
   push:
     branches:
       - main
 
+env:
+  IMAGE: dind-ansible-molecule
+
 jobs:
-  push_to_registries:
-    name: Push image to registries
+  build-test-and-push:
+    permissions:
+      packages: write
+      contents: read
+    name: Build, Test, and Push Image
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v2
-      - name: Push to Docker Hub
-        uses: docker/build-push-action@v1
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: clapclapexcitement
           password: ${{ secrets.DOCKER_HUB_LOGIN }}
-          repository: clapclapexcitement/dind-ansible-molecule
-          tag_with_ref: true
-          tags: latest
-      - name: Push to GitHub Packages
-        uses: docker/build-push-action@v1
+
+      - name: Login to ghcr.io GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          username: mdb
-          password: ${{ secrets.CR_PAT }}
           registry: ghcr.io
-          repository: mdb/dind-ansible-molecule
-          tag_with_ref: true
-          tags: latest
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set SHORT_SHA
+        run: echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
+
+      - name: Set IMAGE_TAG
+        run: echo "IMAGE_TAG=${{ env.IMAGE }}:${{ env.SHORT_SHA }}" >> $GITHUB_ENV
+
+      - name: Build ${{env.IMAGE_TAG }} and export to Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ${{ env.IMAGE_TAG }}
+
+      - name: Test ${{ env.IMAGE_TAG }}
+        run: make test IMAGE=${{ env.IMAGE_TAG }}
+
+      - name: Build and push ${{ env.IMAGE_TAG }} to Docker Hub and GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            clapclapexcitement/${{ env.IMAGE_TAG }}
+            clapclapexcitement/${{ env.IMAGE }}:latest
+            ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
+            ghcr.io/${{ github.repository }}:latest

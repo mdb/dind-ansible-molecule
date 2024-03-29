@@ -16,15 +16,16 @@ compose:
 
 test: compose
 	docker compose exec \
-		"$(IMAGE)" docker run bash echo "hello"
+		dind-ansible-molecule \
+		docker run bash echo "hello"
 .PHONY: test
 
-shell:
+shell: compose
 	docker exec \
 		--privileged \
 		--tty \
 		--interactive \
-		"$(IMAGE)" \
+		dind-ansible-molecule \
 			/bin/bash
 .PHONY: shell
 
