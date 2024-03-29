@@ -23,3 +23,6 @@ RUN pip3 install \
   yamllint \
   molecule[docker] \
   molecule-plugins[docker]
+
+RUN ansible --version
+RUN molecule --version
