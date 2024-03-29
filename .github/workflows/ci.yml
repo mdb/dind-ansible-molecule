@@ -2,11 +2,11 @@ name: CI
 
 on:
   push:
-   branches-ignore:
-    - main
+    branches-ignore:
+      - main
 
 jobs:
-  build:
+  build-and-test:
     name: Build image
     runs-on: ubuntu-latest
     steps:
@@ -14,3 +14,24 @@ jobs:
         uses: actions/checkout@v2
       - name: Build
         run: make
+      - name: Test
+        run: make test
+
+  push-ref:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Push to Docker Hub
+        uses: docker/build-push-action@v1
+        with:
+          username: clapclapexcitement
+          password: ${{ secrets.DOCKER_HUB_LOGIN }}
+          repository: clapclapexcitement/dind-ansible-molecule
+          tag_with_ref: true
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: mdb
+          password: ${{ secrets.CR_PAT }}
+          registry: ghcr.io
+          repository: mdb/dind-ansible-molecule
+          tag_with_ref: true
