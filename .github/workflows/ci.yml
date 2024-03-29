@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-test:
-    name: Build image
+    name: Build and test image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,8 +18,11 @@ jobs:
         run: make test
 
   push-ref:
+    name: Push image ref tag
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Push to Docker Hub
         uses: docker/build-push-action@v1
         with:
