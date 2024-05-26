@@ -29,13 +29,6 @@ jobs:
           username: clapclapexcitement
           password: ${{ secrets.DOCKER_HUB_LOGIN }}
 
-      - name: Login to ghcr.io GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set SHORT_SHA
         run: echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-8)" >> $GITHUB_ENV
 
@@ -60,5 +53,3 @@ jobs:
           tags: |
             clapclapexcitement/${{ env.IMAGE_TAG }}
             clapclapexcitement/${{ env.IMAGE }}:latest
-            ghcr.io/${{ github.repository }}:${{ env.SHORT_SHA }}
-            ghcr.io/${{ github.repository }}:latest
