@@ -1,0 +1,12 @@
+services:
+  dind-ansible-molecule:
+    image: ${IMAGE:-dind-ansible-molecule}
+    platform: linux/amd64
+    container_name: dind
+    privileged: true
+    healthcheck:
+      test: docker info
+      interval: 10s
+      retries: 5
+      start_period: 5s
+      timeout: 3s
